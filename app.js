@@ -67,19 +67,20 @@ binaryServer = BinaryServer({
 binaryServer.on('connection', function(client){
     console.log('new connection');
 
-    var fileWriter = new wav.FileWriter(outFile,{
-        channels: 1,
-        sampleRate: 48000,
-        bitDepth: 16
-    });
-
     client.on('stream', function(stream, meta){
         console.log('new stream');
 
+        var fileWriter = new wav.FileWriter(outFile, {
+            channels: 1,
+            sampleRate: 48000,
+            bitDepth: 16
+        });
+
         stream.pipe(fileWriter);
         stream.on('end', function(){
-            fileWriter.end();
 
+            // now we have a demo.wav file ready to transcribe
+            fileWriter.end();
             console.log('wrote to file ' + outFile);
         });
     });

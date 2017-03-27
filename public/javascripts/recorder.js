@@ -2,7 +2,8 @@
     var client = new BinaryClient('ws://localhost:9001');
 
     client.on('open', function() {
-        window.Stream = client.createStream();
+
+        //window.Stream = client.createStream();
 
         if (!navigator.getUserMedia)
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -17,6 +18,7 @@
         var recording = false;
 
         window.startRecording = function() {
+            window.Stream = client.createStream();
             recording = true;
         }
 

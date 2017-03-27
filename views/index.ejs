@@ -31,6 +31,9 @@
         var shiftPressed = false;
         var zPressed = false;
 
+        // to prevent EventEmitter memory leak
+        var zChecked = false;
+
         // when ctrl-shift-z is pressed, start recording
         function keyPressed(e){
             if(e.ctrlKey){
@@ -41,7 +44,11 @@
             }
             if(e.keyCode == 90 && shiftPressed && ctrlPressed){
                 zPressed = true;
-                startRecording();
+                if(zPressed && !zChecked){
+                    zPressed = false;
+                    zChecked = true;
+                    startRecording();
+                }
             }
         }
 
@@ -49,6 +56,7 @@
             ctrlPressed = false;
             shiftPressed = false;
             zPressed = false;
+            zChecked = false;
             stopRecording();
         }
     </script>
