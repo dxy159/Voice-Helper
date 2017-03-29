@@ -14,7 +14,7 @@ var BinaryServer = require('binaryjs').BinaryServer;
 var fs = require('fs');     // files
 var wav = require('wav');   // sound files
 
-var sqlite3 = require('sqlite').verbose();      // test databases
+var sqlite3 = require('sqlite3').verbose();     // test databases
 var validator = require('email-validator');     // email validator
 var session = require('express-session');       // sessions
 
