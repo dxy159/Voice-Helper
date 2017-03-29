@@ -6,62 +6,7 @@
 </head>
 
 <body>
-    <h1>testing mic</h1>
+<h1>login screen</h1>
 
-    <button onclick="startRecording()">
-        Start Recording
-    </button>
-
-    <button onclick="stopRecording()">
-        Stop Recording
-    </button>
-
-    <p>
-        Or, hold down Ctrl-Shift-z to start recording
-    </p>
-
-    <!--
-        todo: test key buttons pressed down
-                                            -->
-    <script>
-        window.addEventListener("keydown", keyPressed, false);
-        window.addEventListener("keyup", keyReleased, false);
-
-        var ctrlPressed = false;
-        var shiftPressed = false;
-        var zPressed = false;
-
-        // to prevent EventEmitter memory leak
-        var zChecked = false;
-
-        // when ctrl-shift-z is pressed, start recording
-        function keyPressed(e){
-            if(e.ctrlKey){
-                ctrlPressed = true;
-            }
-            if(e.shiftKey && ctrlPressed){
-                shiftPressed = true;
-            }
-            if(e.keyCode == 90 && shiftPressed && ctrlPressed){
-                zPressed = true;
-                if(zPressed && !zChecked){
-                    zPressed = false;
-                    zChecked = true;
-                    startRecording();
-                }
-            }
-        }
-
-        function keyReleased(e){
-            ctrlPressed = false;
-            shiftPressed = false;
-            zPressed = false;
-            zChecked = false;
-            stopRecording();
-        }
-    </script>
-
-    <script src="/javascripts/binary.min.js"></script>
-    <script src="/javascripts/recorder.js"></script>
 </body>
 </html>
