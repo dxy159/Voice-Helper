@@ -7,33 +7,38 @@
 
 <body>
 <h1>login screen</h1>
-	<div>
-		<h3>Enter your email:</h3>
-		<input type="text" id="email">
-		<input type="submit" id="validate-email">
-		<div id="error"></div>
-	</div>
+<div>
+	<h3>Enter your email:</h3>
+	<input type="text" id="email">
+	<input type="submit" id="validate-email">
+	<div id="error"></div>
+</div>
 
-	<script type="text/javascript" src="/javascripts/jquery-3.1.1.js"></script>
-	<script type="text/javascript">
-		
-	$(document).ready(function() {
-		$("#validate-email").click(function() {
+<script type="text/javascript" src="/javascripts/jquery-3.1.1.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		// when the submit button is clicked
+		// validate the email on the server and go to the dashboard
+		$("#validate-email").click(function(){
 			var email = $("#email").val();
-			$.get("http://localhost:3000/validate-email", {email: email
-			}, function(data) {
+			$.get("http://localhost:3000/validate-email", {
+				email: email
+			}, function(data){
+				if(data === 'valid'){
 
-				if (data === "valid") {
+					// session will be setup for the user
 					window.location.replace("http://localhost:3000/dashboard");
-				} else {
+				}else{
+
+					// error message if invalid email
 					$("#error").html(data);
 				}
-
 			});
 		});
 	});
 
-	</script>
+</script>
 
 </body>
 </html>
