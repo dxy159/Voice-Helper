@@ -4,7 +4,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-//var $ = require('jquery');
 
 
 /** --- html to node setup --- */
@@ -22,12 +21,12 @@ var SQLiteStore = require('connect-sqlite3')(session);
 
 // global variable for audio file
 // used in binary server to store user audio from UI
-// todo: send to speech to text api to parse
+// todo: send to speech to text api to transcribe
 var outFile = 'demo.wav';
 
+var sess;
 
 
-/** --- generated code --- */
 
 // login page
 var index = require('./routes/index');
@@ -49,10 +48,35 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(session({secret: "abc", resave: false, saveUninitialized: true}))
+app.use(session({secret: "abc", resave: false, saveUninitialized: true}))
 app.use('/', index);
 app.use('/users', users);
 app.use('/dashboard', dashboard);
+
+
+// todo: do we need this? test later
+app.get('/', function(req, res){
+    sess = req.session;
+    // reference - https://codeforgeek.com/2014/09/manage-session-using-node-js-express-4/
+    res.render("index.ejs");
+});
+
+/** --- email validation and create session --- */
+app.get('/validate-email', function(req, res){
+    sess = req.session;
+
+    // check if email is undefined
+    // and run through validator node module
+    if(req.query.email == undefined || validator.validate(req.query.email) == false){
+        res.send('<p>invalid email, try again</p>');
+    } else {
+        sess.email = req.query.email;
+        res.end('valid');
+    }
+});
+
+
+/** --- do NOT touch the code below --- */
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next){
@@ -61,34 +85,30 @@ app.use(function(req, res, next){
     next(err);
 });
 
-// error handler
+// error handlers
+
+// development error handler
+// will print stacktrace
+if(app.get('env') === 'development'){
+    app.use(function(err, req, res, next){
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
 app.use(function(err, req, res, next){
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
 });
 
-/** --- end generated code --- */
-
-
-/** --- email validation and create session --- */
-app.get('/validate-email', function(req, res){
-
-    console.log(req.query.email);
-
-    // check if email is undefined
-    // and run through validator node module
-    if(req.query.email == undefined || validator.validate(req.query.email) == false){
-        res.send('<p>invalid email, try again</p>');
-    } else {
-        req.session.email = req.query.email;
-        res.end('valid');
-    }
-});
 
 
 /** --- binary server --- */
