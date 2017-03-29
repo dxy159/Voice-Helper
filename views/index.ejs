@@ -7,6 +7,33 @@
 
 <body>
 <h1>login screen</h1>
+	<div>
+		<h3>Enter your email:</h3>
+		<input type="text" id="email">
+		<input type="submit" id="validate-email">
+		<div id="error"></div>
+	</div>
+
+	<script type="text/javascript" src="/javascripts/jquery-3.2.0.min.js"></script>
+	<script type="text/javascript">
+		
+	$(document).ready(function() {
+		$("#validate-email").click(function() {
+			var email = $("email").val();
+			$.get("http://localhost:3000/validate-email", {email: email
+			}, function(data) {
+
+				if (data === "valid") {
+					window.location.replace("http://localhost:3000/dashboard");
+				} else {
+					$("#error").html(data);
+				}
+
+			});
+		});
+	});
+
+	</script>
 
 </body>
 </html>

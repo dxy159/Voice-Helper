@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var $ = require('jquery');
 
 
 /** --- html to node setup --- */
@@ -17,7 +17,8 @@ var wav = require('wav');   // sound files
 var sqlite3 = require('sqlite3').verbose();     // test databases
 var validator = require('email-validator');     // email validator
 var session = require('express-session');       // sessions
-
+var connect = require('connect');
+var SQLiteStore = require('connect-sqlite3')(session);
 
 // global variable for audio file
 // used in binary server to store user audio from UI
@@ -48,7 +49,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(session({secret: "abc", resave: false, saveUninitialized: true}))
 app.use('/', index);
 app.use('/users', users);
 app.use('/dashboard', dashboard);
@@ -74,18 +75,15 @@ app.use(function(err, req, res, next){
 /** --- end generated code --- */
 
 
-
-
 /** --- email validation and create session --- */
 app.get('/validate-email', function(req, res){
-
-    // todo: session for user
 
     // check if email is undefined
     // and run through validator node module
     if(req.query.email == undefined || validator.validate(req.query.email) == false){
         res.send('<p>invalid email, try again</p>');
-    }else{
+    } else {
+        req.session.email = req.query.email;
         res.end('valid');
     }
 });
