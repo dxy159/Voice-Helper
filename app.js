@@ -48,18 +48,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// todo: replace secret (and hide it), store in database
 app.use(session({secret: "abc", resave: false, saveUninitialized: true}))
+
+
 app.use('/', index);
 app.use('/users', users);
 app.use('/dashboard', dashboard);
 
 
-// todo: do we need this? test later
-app.get('/', function(req, res){
+// check for existing session
+// works - March 29
+app.get('/check-session', function(req, res){
     sess = req.session;
-    // reference - https://codeforgeek.com/2014/09/manage-session-using-node-js-express-4/
-    res.render("index.ejs");
+    if(sess.email == null){
+        res.send('sessionless');
+    }else{
+        res.end('exists');
+    }
 });
+
+
 
 /** --- email validation and create session --- */
 app.get('/validate-email', function(req, res){
@@ -116,11 +126,12 @@ binaryServer = BinaryServer({
     port: 9001
 });
 
+
 binaryServer.on('connection', function(client){
-    console.log('new connection');
+    console.log('new connection (page loaded)');
 
     client.on('stream', function(stream, meta){
-        console.log('new stream');
+        console.log('new stream (start recording)');
 
         var fileWriter = new wav.FileWriter(outFile, {
             channels: 1,
@@ -137,6 +148,7 @@ binaryServer.on('connection', function(client){
         });
     });
 });
+
 
 
 module.exports = app;

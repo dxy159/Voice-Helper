@@ -6,24 +6,36 @@
 </head>
 
 <body>
-    <h1>dashboard page</h1>
+<h1>dashboard page</h1>
 
-    <button onclick="startRecording()">
-        Start Recording
-    </button>
+<button onclick="startRecording()">
+    Start Recording
+</button>
 
-    <button onclick="stopRecording()">
-        Stop Recording
-    </button>
+<button onclick="stopRecording()">
+    Stop Recording
+</button>
 
-    <p>
-        Or, hold down Ctrl-Shift-z to start recording
-    </p>
+<p>
+    Or, hold down Ctrl-Shift-z to start recording
+</p>
 
-    <!--
-        todo: test key buttons pressed down
-                                            -->
-    <script>
+
+
+<script src="/javascripts/binary.min.js"></script>
+<script src="/javascripts/recorder.js"></script>
+<script src="/javascripts/jquery-3.1.1.js"></script>
+<script>
+    $(document).ready(function(){
+
+        // check for session
+        // redirect user to login page if session does not exist
+        $.get('/check-session', {}, function(data){
+            if(data === 'sessionless'){
+                window.location.replace("http://localhost:3000");
+            }
+        });
+
         window.addEventListener("keydown", keyPressed, false);
         window.addEventListener("keyup", keyReleased, false);
 
@@ -59,9 +71,9 @@
             zChecked = false;
             stopRecording();
         }
-    </script>
+    });
+</script>
 
-    <script src="/javascripts/binary.min.js"></script>
-    <script src="/javascripts/recorder.js"></script>
+
 </body>
 </html>

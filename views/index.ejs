@@ -14,9 +14,19 @@
 	<div id="error"></div>
 </div>
 
-<script type="text/javascript" src="/javascripts/jquery-3.1.1.js"></script>
-<script type="text/javascript">
+<script src="/javascripts/jquery-3.1.1.js"></script>
+<script>
 	$(document).ready(function(){
+
+		// upon document loaded
+		// check for session, yes >> go to dashboard
+		// works - March 29
+		$.get("http://localhost:3000/check-session", {}, function(data){
+			if(data === 'exists'){
+				window.location.replace("http://localhost:3000/dashboard");
+			}
+		});
+
 
 		// when the submit button is clicked
 		// validate the email on the server and go to the dashboard
