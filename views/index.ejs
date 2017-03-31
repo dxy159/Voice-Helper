@@ -6,6 +6,17 @@
 
 	<style>
 
+        /* using a custom font */
+        @font-face{
+            font-family: CaviarDreams;
+            src: url(/CaviarDreams.ttf);
+        }
+
+        body{
+            font-family: CaviarDreams;
+            font-size: 16px;
+        }
+
         /*  most outer div
             this takes up the entire body  */
         #page-container{
@@ -25,13 +36,14 @@
         /*  inner div background
             to turn into circle   */
         #square{
+            opacity: 0;
             width: 500px;
             height: 500px;
             background: #7bc3ae;
         }
 
         /* text alignment for header */
-        h1{
+        h1, h3{
             text-align: center;
         }
 
@@ -57,9 +69,39 @@
                 can "hide" but still select
                                              */
         #form{
-            /*  todo: remove comment
-                visibility: hidden;
-                                     */
+            visibility: hidden;
+            opacity: 0;
+        }
+
+
+        input[type=text] {
+            width: 125px;
+            box-sizing: border-box;
+            border-radius: 30px;
+            font-size: 16px;
+            border: none;
+            background-color: #f5e9ae;
+
+            background-image: url('http://assets.meredith.com/static/themes/home/images/email.png');
+            background-position: 5px 7px;
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 40px;
+            -webkit-transition: width 0.4s ease-in-out;
+            transition: width 0.4s ease-in-out;
+        }
+        input[type=text]:focus {
+            width: 50%;
+        }
+
+        input:focus{
+            outline: none;
+        }
+
+        .button{
+            border-radius: 30px;
+            border: none;
+            background: #F5E9AE;
+            padding: 12px;
         }
 
     </style>
@@ -79,7 +121,7 @@
             <div class="center">
                 <h3>Enter your email:</h3>
                 <input type="text" id="email">
-                <input type="submit" id="validate-email">
+                <input type="submit" id="validate-email" class="button">
                 <div id="error"></div>
             </div>
         </div>
@@ -92,6 +134,7 @@
 
 
 <script src="/javascripts/jquery-3.1.1.js"></script>
+<script src="/javascripts/jquery.transform.js"></script>
 <script>
 	$(document).ready(function(){
 
@@ -126,6 +169,50 @@
          *  make form visible (this will have its own animation)
          *  at same time, turn square to circle
          */
+
+        var screenWidth = $(window).width();
+        var screenHeight = $(window).height();
+
+        var squareKeyframe0 = screenHeight * 0.7;
+        var squareKeyframe1 = screenHeight * 0.42 - 50;
+        var hovered = false;
+
+        /** --- code for animations --- */
+
+        $("#square").css({
+            "opacity": "0.0",
+            "margin-top": squareKeyframe0,
+            "width": "90px",
+            "height": "90px",
+            "transform": "rotate(-50deg)"
+        }).delay(200).animate({
+            marginTop: squareKeyframe1,
+            opacity: "1.0",
+            transform: 'rotate(0deg)'
+        }, 800, "swing").hover(function(){
+            if(!hovered){
+                hovered = true;
+                $(this).animate({
+                    width: "300px",
+                    height: "300px",
+                    borderTopLeftRadius: 300,
+                    borderTopRightRadius: 300,
+                    borderBottomLeftRadius: 300,
+                    borderBottomRightRadius: 300,
+                    marginTop: squareKeyframe1 - 125
+                }, 400, "swing");
+
+                $("#form").delay(350).css({
+                    "visibility": "visible",
+                    "left": "-10px",
+                    "opacity": "0.0"
+                }).animate({
+                    opacity: "1.0",
+                    left: "0px"
+                }, 400, "swing");
+            }
+        });
+
 
 
 		// when the submit button is clicked
