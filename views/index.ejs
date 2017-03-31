@@ -3,16 +3,93 @@
 <head>
     <title>voice app helper</title>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
+
+	<style>
+
+        /*  most outer div
+            this takes up the entire body  */
+        #page-container{
+            position: relative;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* horizontal centering */
+        .center{
+            margin: auto;
+            width: 50%;
+        }
+
+        /*  inner div background
+            to turn into circle   */
+        #square{
+            width: 500px;
+            height: 500px;
+            background: #7bc3ae;
+        }
+
+        /* text alignment for header */
+        h1{
+            text-align: center;
+        }
+
+        /* vertical centering */
+        .middle-div {
+            position: relative;
+            top: 48.5%;
+            -webkit-transform: translateY(-55%);
+            -ms-transform: translateY(-55%);
+            transform: translateY(-55%);
+        }
+
+        /*
+            -- visibility vs display --
+
+            visibility: hidden
+                takes up space
+
+            display: none
+                does not take up space
+
+            opacity
+                can "hide" but still select
+                                             */
+        #form{
+            /*  todo: remove comment
+                visibility: hidden;
+                                     */
+        }
+
+    </style>
 </head>
 
 <body>
-<h1>login screen</h1>
-<div>
-	<h3>Enter your email:</h3>
-	<input type="text" id="email">
-	<input type="submit" id="validate-email">
-	<div id="error"></div>
+
+
+<div id="page-container">
+    <div id="square" class="center">
+
+        <div id="form" class="middle-div">
+            <div class="center">
+                <h1>login screen</h1>
+            </div>
+
+            <div class="center">
+                <h3>Enter your email:</h3>
+                <input type="text" id="email">
+                <input type="submit" id="validate-email">
+                <div id="error"></div>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+
+
+
 
 <script src="/javascripts/jquery-3.1.1.js"></script>
 <script>
@@ -26,6 +103,29 @@
 				window.location.replace("http://localhost:3000/dashboard");
 			}
 		});
+
+        // todo: animate html elements / css
+        /**
+         * init:
+         *  set square to be small (~70 px)
+         *  hide it
+         *  place at bottom of screen
+         *  opacity = 0 (do 50 for testing)
+         *
+         * animate:
+         * 0 - 0.75s
+         *  make square visible
+         *  key opacity = 0 (still hidden, but now selectable)
+         *  key rotation 180 degrees
+         *  key position to center of screen
+         *  opacity = 100 (completely visible)
+         *
+         *  try to smooth transition (slow down near finish)
+         *
+         * 0.75 - 1.5s
+         *  make form visible (this will have its own animation)
+         *  at same time, turn square to circle
+         */
 
 
 		// when the submit button is clicked

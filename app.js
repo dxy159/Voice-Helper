@@ -50,7 +50,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // todo: replace secret (and hide it), store in database
-app.use(session({secret: "abc", resave: false, saveUninitialized: true}))
+// store in database later or else we cant get to login page
+app.use(session({
+    secret: process.env.SPEECHTOTEXT_SESSIONDBSECRET,
+    resave: false,
+    saveUninitialized: true
+}));
 
 
 app.use('/', index);
@@ -126,6 +131,7 @@ binaryServer = BinaryServer({
     port: 9001
 });
 
+// todo: store .wav file into '/users/<USER_EMAIL>/voiceCommand.wav'
 
 binaryServer.on('connection', function(client){
     console.log('new connection (page loaded)');
