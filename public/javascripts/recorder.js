@@ -1,5 +1,6 @@
 
 (function(window) {
+
     var client = new BinaryClient('ws://localhost:9001');
 
     client.on('open', function() {
