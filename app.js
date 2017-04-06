@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 
-
 /** --- html to node setup --- */
 
 // client connection
@@ -17,16 +16,18 @@ var wav = require('wav');   // sound files
 var sqlite3 = require('sqlite3').verbose();     // test databases
 var validator = require('email-validator');     // email validator
 var session = require('express-session');       // sessions
-
+var connect = require('connect');
+var SQLiteStore = require('connect-sqlite3')(session);
 
 // global variable for audio file
 // used in binary server to store user audio from UI
-// todo: send to speech to text api to parse
-var outFile = 'demo.wav';
+// todo: send to speech to text api to transcribe
+/** apr 3 - removed global var, find voice file in /users */
+//var outFile = 'demo.wav';
+
+var sess;
 
 
-
-/** --- generated code --- */
 
 // login page
 var index = require('./routes/index');
@@ -49,9 +50,54 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// todo: replace secret (and hide it), store in database
+// store in database later or else we cant get to login page
+app.use(session({
+    secret: process.env.SPEECHTOTEXT_SESSIONDBSECRET,
+    resave: false,
+    saveUninitialized: true
+}));
+
+
 app.use('/', index);
 app.use('/users', users);
 app.use('/dashboard', dashboard);
+
+
+// check for existing session
+// works - March 29
+app.get('/check-session', function(req, res){
+    sess = req.session;
+    if(sess.email == null){
+        res.send('sessionless');
+    }else{
+        res.end('exists');
+    }
+});
+
+app.get('/get-session', function(req, res){
+    sess = req.session;
+    res.send(sess.email);
+});
+
+
+
+/** --- email validation and create session --- */
+app.get('/validate-email', function(req, res){
+    sess = req.session;
+
+    // check if email is undefined
+    // and run through validator node module
+    if(req.query.email == undefined || validator.validate(req.query.email) == false){
+        res.send('<p>invalid email, try again</p>');
+    } else {
+        sess.email = req.query.email;
+        res.end('valid');
+    }
+});
+
+
+/** --- do NOT touch the code below --- */
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next){
@@ -60,35 +106,30 @@ app.use(function(req, res, next){
     next(err);
 });
 
-// error handler
+// error handlers
+
+// development error handler
+// will print stacktrace
+if(app.get('env') === 'development'){
+    app.use(function(err, req, res, next){
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
 app.use(function(err, req, res, next){
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
 });
 
-/** --- end generated code --- */
-
-
-
-
-/** --- email validation and create session --- */
-app.get('/validate-email', function(req, res){
-
-    // todo: session for user
-
-    // check if email is undefined
-    // and run through validator node module
-    if(req.query.email == undefined || validator.validate(req.query.email) == false){
-        res.send('<p>invalid email, try again</p>');
-    }else{
-        res.end('valid');
-    }
-});
 
 
 /** --- binary server --- */
@@ -96,11 +137,23 @@ binaryServer = BinaryServer({
     port: 9001
 });
 
+// todo: store .wav file into '/users/<USER_EMAIL>/voiceCommand.wav'
+
 binaryServer.on('connection', function(client){
-    console.log('new connection');
+    console.log('new connection (page loaded)');
 
     client.on('stream', function(stream, meta){
-        console.log('new stream');
+        console.log('new stream (start recording)');
+
+        // meta.sessionEmail has the session
+        //console.log('meta: ' + meta.sessionEmail);
+
+        var userDirectory = "./users/" + meta.sessionEmail;
+        if(!fs.existsSync(userDirectory)){
+            fs.mkdirSync(userDirectory);
+        }
+
+        var outFile = userDirectory + "/command.wav";
 
         var fileWriter = new wav.FileWriter(outFile, {
             channels: 1,
@@ -117,6 +170,7 @@ binaryServer.on('connection', function(client){
         });
     });
 });
+
 
 
 module.exports = app;

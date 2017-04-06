@@ -5,6 +5,11 @@
 Creating a custom Voice Helper for the browser.
 Will turn into a chrome extension upon completion
 
+##### March 28 
+
+Login page added
+Sessions enabled
+
 ##### March 27
 
 Newer audio received will overwrite the previous

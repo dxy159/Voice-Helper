@@ -8,6 +8,8 @@
   "dependencies": {
     "binaryjs": "^0.2.1",
     "body-parser": "~1.15.2",
+    "connect": "^3.6.0",
+    "connect-sqlite3": "^0.9.9",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "ejs": "~2.5.2",
